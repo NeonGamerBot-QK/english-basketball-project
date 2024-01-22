@@ -8,7 +8,8 @@
 <body>
     <div>
         <h3>Game Code</h3>
-        <button class="btn">Gen Code</button>
+        <button class="btn" id="genCodeBtn">Gen Code</button>
+        <span id="code"></span>
     </div>
     <div>
         <h3>Awnser for this slide:</h3>
@@ -18,5 +19,22 @@
         <h3>Connected Users</h3>
         <ul id="users"></ul>
     </div>
+    <script>
+        const genCodeBtn = document.getElementById('genCodeBtn');
+        const ans = document.getElementById('code');
+
+        genCodeBtn.addEventListener('click', () => {
+            
+            fetch('/api/gen_key?auth='+encodeURI(localStorage.getItem('password')), {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            }).then((r) => r.json()).then(({ key }) => {
+                ans.innerHTML = key;
+            })
+        });
+
+    </script>
 </body>
 </html>

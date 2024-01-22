@@ -1,9 +1,10 @@
 // setup an express server with socket io
 const express = require('express');
 const app = express();
+const slides = require('./slides')
 const server = require('http').Server(app);
 const io = require('socket.io')(server);
-const password = 'dixion&saahilprojectpassword'
+const password = 'dixionANDsaahilprojectpassword'
 let currentKey = null
 app.use(express.json())
 app.use(express.urlencoded({extended: true}))
@@ -13,7 +14,11 @@ app.set('view engine', 'ejs')
 app.get('/', (req,res) => {
     res.render('index')
 })
+app.get('/admin', (req,res) => {
+    res.render('admin')
+})
 app.get('/api/gen_key', (req,res) => {
+    // console.log(req.query.auth, password)
 if(req.query.auth == password) {
     const key = Math.random().toString().split('.')[1].slice(0,6)
     currentKey = key
@@ -33,4 +38,7 @@ if(req.query.key === currentKey) {
 
 io.on('connection', (socket) => {
 
+})
+app.listen(3000, () => {    
+    console.log('Server running at port 3000')
 })
