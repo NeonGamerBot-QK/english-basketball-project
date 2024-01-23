@@ -7,20 +7,60 @@
 
 <link href="https://cdn.jsdelivr.net/npm/daisyui@4.6.0/dist/full.min.css" rel="stylesheet" type="text/css" />
 <script src="https://cdn.tailwindcss.com"></script>
+<!-- socket io  js cdn url-->
+<script src="https://cdnjs.clo
+udflare.com/ajax/libs/socket.i
+o/4.7.4/socket.io.js"></script>
+
 
 
 </head>
 <body>
     <div id="code">
-        <div class="hero min-h-screen bg-base-200">
-            <div class="hero-content text-center">
-              <div class="max-w-md">
-                <h1 class="text-5xl font-bold">Game Code</h1>
-                <!-- <p class="py-6">Provident cupiditate voluptatem et in. Quaerat fugiat ut assumenda excepturi exercitationem quasi. In deleniti eaque aut repudiandae et a id nisi.</p> -->
-                <button class="btn btn-primary">Check</button>
-              </div>
-            </div>
+      <div class="hero min-h-screen bg-base-200">
+        <div class="hero-content flex-col lg:flex-row-reverse">
+          <div class="text-center lg:text-left">
+            <h1 class="text-5xl font-bold">Game Code</h1>
+            <p class="py-6">Login using the game code</p>
           </div>
+          <div class="card shrink-0 w-full max-w-sm shadow-2xl bg-base-100">
+            <div class="card-body">
+              <div class="form-control">
+                <label class="label">
+                  <span class="label-text">Game Code</span>
+                </label>
+                <input type="number" placeholder="00000" class="input input-bordered" required id="code_input"/>
+                <!-- <label class="label">
+                  <a href="#" class="label-text-alt link link-hover">Forgot password?</a>
+                </label> -->
+              </div>
+              <div class="form-control mt-6">
+                <button class="btn btn-primary" id="code_btn">Play</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
     </div>
+    <script>
+      // summon socket io
+      console.log('ur mom')
+      const socket = io();
+      const ccode = document.getElementById('code_input');
+      const btn = document.getElementById('code_btn');
+      btn.addEventListener('click', () => {
+        console.log('ur mom')
+        // fetch('/api/verify_key?key='+code.value).then(r=>r.json()).then(({ status }) => {
+socket.emit('game_code', ccode.value);
+socket.on('accepted', () => {
+  document.getElementById('code').className = 'hidden'
+  alert('game ready')
+})
+socket.on('rejected', () => {
+  alert("Invalid Code")
+})
+        // })
+      })
+    </script>
 </body>
 </html>

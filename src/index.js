@@ -37,8 +37,19 @@ if(req.query.key === currentKey) {
 })
 
 io.on('connection', (socket) => {
-
+socket.on('game_code', (code) => {
+    console.log(currentKey, code)
+    if(code === currentKey) {
+        // socket.join(code)
+        // socket.emit('game_code_verified')
+        socket.emit('accepted')
+        // More events Here
+        // ...
+    } else {
+        socket.emit('rejected')
+    }
 })
-app.listen(3000, () => {    
+})
+server.listen(3000, () => {    
     console.log('Server running at port 3000')
 })
