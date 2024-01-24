@@ -69,14 +69,20 @@ o/4.7.4/socket.io.js"></script>
       btn.addEventListener('click', () => {
         console.log('ur mom')
         // fetch('/api/verify_key?key='+code.value).then(r=>r.json()).then(({ status }) => {
-socket.emit('game_code', ccode.value);
+socket.emit('game_code', ccode.value.trim());
 socket.on('accepted', () => {
   document.getElementById('code').className = 'hidden'
   document.getElementById('game-loading').className = ''
-  setTimeout(() => {
-
+  setTimeout(()   => {
+socket.on('starting')
   }, 1_500)
   // alert('game ready')
+})
+socket.on('suspended', (req,res) => {
+  document.getElementById('game-loading').className = 'hidden'
+  document.getElementById('code').className = ''
+  alert('suspended')
+  location.reload()
 })
 socket.on('rejected', () => {
   alert("Invalid Code")

@@ -34,6 +34,44 @@
                 ans.innerHTML = key;
             })
         });
+        fetch('/protected/game_code', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }).then((r) => r.json()).then(({ key }) => {
+            ans.innerHTML = key;
+        })
+        fetch('/protected/clients', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }).then((r) => r.json()).then(({ clients }) => {
+            const users = document.getElementById('users');
+            clients.forEach((client) => {
+                const li = document.createElement('li');
+                const btn = document.createElement('button');
+                li.innerHTML = `${client.id} - (${client.handshake.headers['user-agent']}) connected since ${new Date(client.handshake.time).toLocaleString()}`;
+                btn.innerHTML = 'Kick';
+                btn.addEventListener('click', () => {
+                    fetch('/protected/suspend_socket', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ id: client.id })
+                    }).then((r) => r.json()).then(({ success }) => {
+                        if (success) {
+                            li.remove();
+                        }
+                    })
+                 
+                })
+                li.appendChild(btn);
+                users.appendChild(li);
+            })
+        })
 
     </script>
 </body>
