@@ -45,6 +45,9 @@ socket.on('game_code', (code) => {
         socket.emit('accepted')
         // More events Here
         // ...
+        // socket.on('query_scores', () => {
+
+        // })
     } else {
         socket.emit('rejected')
     }
