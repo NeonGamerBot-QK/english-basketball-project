@@ -8,6 +8,7 @@ const password = 'dixionANDsaahilprojectpassword'
 const clients = []
 const basicAuth = require('express-basic-auth')
 let currentKey = null
+let slide_index = 0
 app.use(express.json())
 app.use(express.urlencoded({extended: true}))
 app.use(express.static('public'))
@@ -41,13 +42,16 @@ app.get('/protected/clients', (req,res) => {
         }
     })})
 })
+app.get('/protected/slide_index', (req,res) => {
+    res.json({ index: slide_index })
+})
 app.get('/protected/slides', (req,res) => {
     res.json(slides)
 })
 app.get('/protected/example', (req,res) => {
     console.log('example')
     clients.forEach((c) => {
-        c.emit('starting', [{ title: "Example", answers: ["A", "B", "C", "D"] }])
+        c.emit('starting', slides[0])
     setTimeout((e) => {
         c.emit('question')
         setTimeout((e) => {
@@ -72,7 +76,23 @@ app.get('/protected/game_code', (req,res) => {
     res.json({ key: currentKey })
 })
 app.post('/protected/next_slide', (req,res) => {
-    io.sockets.emit('next_slide', req.body.slide || 0)
+    // io.sockets.emit('starting', req.body.slide || 0)
+    // setTimeout((e) => {
+    //     // io.sockets.emit('question')
+    // }, 1_500)
+    clients.forEach((c) => {
+        c.emit('starting', slides[slide_index])
+    setTimeout((e) => {
+        c.emit('question')
+        slide_index++;
+    }, 8_000)
+    })
+    // socket.emit('question')
+    res.json({ status: true })
+})
+app.post('/protected/leaderboard', (req,res) => {
+    io.sockets.emit('lb', req.body.lb || [])
+    res.json({ status: true })
 })
 app.get('/', (req,res) => {
     res.render('index')
@@ -115,6 +135,9 @@ socket.on('game_code', (code) => {
     } else {
         socket.emit('rejected')
     }
+})
+socket.on('username', (username) => {
+    socket.handshake.username = username
 })
 socket.on('disconnect', () => {
     const index = clients.indexOf(socket)

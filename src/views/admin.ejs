@@ -14,6 +14,11 @@
     <div>
         <h3>Events</h3>
         <button id="example">Run Example</button>
+        <span id="slide_index">Slide: #</span>
+    <ul>
+        <li><button id="next-slide">Next Slide</button></li>
+        <li><button id="leaderboard">LeaderBoard</button></li>
+    </ul>
     </div>
     <div>
         <h3>Awnser for this slide:</h3>
@@ -38,6 +43,7 @@
                 ans.innerHTML = key;
             })
         });
+        function runInterval() {
         fetch('/protected/game_code', {
             method: 'GET',
             headers: {
@@ -45,6 +51,14 @@
             }
         }).then((r) => r.json()).then(({ key }) => {
             ans.innerHTML = key;
+        })
+        fetch('/protected/slide_index', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }).then((r) => r.json()).then(({ index }) => {
+            document.getElementById('slide_index').innerHTML = `Slide: ${index}`;
         })
         fetch('/protected/clients', {
             method: 'GET',
@@ -54,9 +68,11 @@
         }).then((r) => r.json()).then(({ clients }) => {
             const users = document.getElementById('users');
             clients.forEach((client) => {
-                const li = document.createElement('li');
+                const li = document.getElementById(client.id) || document.createElement('li');
                 const btn = document.createElement('button');
-                li.innerHTML = `${client.id} - (${client.handshake.headers['user-agent']}) connected since ${new Date(client.handshake.time).toLocaleString()}`;
+                li.id = client.id;
+                // li.innerHTML = `(User - ${client.handshake.username}) ${client.id} - (${client.handshake.headers['user-agent']}) connected since ${new Date(client.handshake.time).toLocaleString()}`;
+                li.innerHTML = `(User - ${client.handshake.username}) `;
                 btn.innerHTML = 'Kick';
                 btn.addEventListener('click', () => {
                     fetch('/protected/suspend_socket', {
@@ -73,7 +89,7 @@
                  
                 })
                 li.appendChild(btn);
-                users.appendChild(li);
+                if(!document.getElementById(client.id)) users.appendChild(li);
             })
         })
         document.getElementById('example').addEventListener('click', () => {
@@ -85,6 +101,34 @@
             }).then((r) => r.json()).then(({ success }) => {
                 if (success) {
                     alert('Example ran successfully');
+                }
+            })
+        })
+    }
+    runInterval();
+        setInterval(runInterval, 1000);
+        // events
+        document.getElementById('next-slide').addEventListener('click', () => {
+            fetch('/protected/next_slide', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            }).then((r) => r.json()).then(({ success }) => {
+                if (success) {
+                    alert('Next slide ran successfully');
+                }
+            })
+        })
+        document.getElementById('leaderboard').addEventListener('click', () => {
+            fetch('/protected/leaderboard', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            }).then((r) => r.json()).then(({ success }) => {
+                if (success) {
+                    alert('Leaderboard ran successfully');
                 }
             })
         })
