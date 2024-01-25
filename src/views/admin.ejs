@@ -12,6 +12,10 @@
         <span id="code"></span>
     </div>
     <div>
+        <h3>Events</h3>
+        <button id="example">Run Example</button>
+    </div>
+    <div>
         <h3>Awnser for this slide:</h3>
         <span id="ans"></span>
     </div>
@@ -70,6 +74,18 @@
                 })
                 li.appendChild(btn);
                 users.appendChild(li);
+            })
+        })
+        document.getElementById('example').addEventListener('click', () => {
+            fetch('/protected/example', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            }).then((r) => r.json()).then(({ success }) => {
+                if (success) {
+                    alert('Example ran successfully');
+                }
             })
         })
 

@@ -53,13 +53,75 @@ o/4.7.4/socket.io.js"></script>
       </div>
     </div>
     <div id="beforeQuestion" class="hidden">
-
+      <div class="hero min-h-screen bg-base-200">
+        <div class="hero-content flex-col ">
+          <div class="text-center">
+            <h2>Wating...</h2>
+      <span class="loading loading-spinner md:loading-lg"></span>
+      </div>
+      </div>
+      </div>
     </div>
     <div id="question" class="hidden">
-
+      <div class="hero min-h-screen bg-base-200">
+        <div class="hero-content flex-col ">
+          <div class="text-center">
+            <h1 class="text-5xl font-bold" id="question_title">Slide #</h1>
+            <p class="py-6"></p>
+          </div>
+          <div class="card shrink-0 w-full max-w-sm shadow-2xl bg-base-100">
+            <div class="card-body">
+              <div class="form-control">
+                <label class="label">
+                  <span class="label-text">Question Title</span>
+                </label>
+                <div id="anss">
+<div class="flex">
+  <button id="q_0" class="btn btn-primary p-2 m-5"></button>
+  <button id="q_1" class="btn btn-primary p-2 m-5"></button>
+</div>
+<br>
+<div class="flex">
+  <button id="q_2" class="btn btn-primary p-2 m-5"></button>
+  <button id="q_3" class="btn btn-primary p-2 m-5"></button>
+</div>
+                </div>
+                <!-- <input type="number" placeholder="00000" class="input input-bordered" required id="code_input"/> -->
+                <!-- <label class="label">
+                  <a href="#" class="label-text-alt link link-hover">Forgot password?</a>
+                </label> -->
+              </div>
+              <div class="form-control mt-6">
+                <button class="btn btn-primary" id="question_submit">Submit</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
     </div>
     <div id="afterQuestion" class="hidden">
+      <div class="hero min-h-screen bg-base-200">
+        <div class="hero-content flex-col ">
+          <div class="text-center">
+      <h2>Results</h2>
+<p class="mb-5" id="place">You are in $PLACE.</p>
       </div>
+      </div>
+      </div>
+      </div>
+      <div id="afterQuestion" class="hidden">
+        <div class="hero min-h-screen bg-base-200">
+          <div class="hero-content flex-col ">
+            <div class="text-center">
+        <h2>Results</h2>
+  <ul class="rounded-lg border border-base-900 w-150" id="after_lb">
+
+  </ul>
+        </div>
+        </div>
+        </div>
+        </div>
     <script>
       // summon socket io
       console.log('ur mom')
@@ -74,7 +136,27 @@ socket.on('accepted', () => {
   document.getElementById('code').className = 'hidden'
   document.getElementById('game-loading').className = ''
   setTimeout(()   => {
-socket.on('starting')
+socket.on('starting', (question) => {
+  question = question[0]
+  console.log(question)
+document.getElementById('game-loading').className = 'hidden'
+document.getElementById('beforeQuestion').className = ''
+document.getElementById('question_title').innerHTML = question.title
+document.getElementById('q_0').innerHTML = question.answers[0]
+document.getElementById('q_1').innerHTML = question.answers[1]
+document.getElementById('q_2').innerHTML = question.answers[2]
+document.getElementById('q_3').innerHTML = question.answers[3]
+// document.getElementById('beforeQuestion').className = 'hidden'
+})
+socket.on('question', (question) => {
+  // window.
+document.getElementById('beforeQuestion').className = 'hidden'
+document.getElementById('question').className = ''
+})
+socket.on('time_up', (results) => {
+  document.getElementById('beforeQuestion').className = ''
+document.getElementById('question').className = 'hidden'
+})
   }, 1_500)
   // alert('game ready')
 })
@@ -86,6 +168,19 @@ socket.on('suspended', (req,res) => {
 })
 socket.on('rejected', () => {
   alert("Invalid Code")
+})
+socket.on('lb', (leaderboard) => {
+  document.getElementById('beforeQuestion').className = 'hidden'
+  document.getElementById('question').className = 'hidden'
+  document.getElementById('afterQuestion').className = ''
+  leaderboard.forEach((username,index) => {
+    const li = document.createElement('li');
+    li.className = `px-6 py-2 border-b border-base-900 w-full ${ index === 0 ? 'rounded-t-lg' : index === (leaderboard.length -1) ? 'rounded-b-lg' : ''}`
+    li.innerHTML = `${index+1 === 1 ? '1st' : index+1 === 2?'2nd' : index+1 == 3 ? '3rd' : `${index}th`} - ${username}`;
+    document.getElementById('after_lb').appendChild(li)
+  })
+  document.getElementById('item').innerHTML = document.getElementById('item').innerHTML.replace('$PLACE', leaderboard.length)
+  console.log('lb')
 })
         // })
       })

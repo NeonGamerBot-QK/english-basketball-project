@@ -44,6 +44,19 @@ app.get('/protected/clients', (req,res) => {
 app.get('/protected/slides', (req,res) => {
     res.json(slides)
 })
+app.get('/protected/example', (req,res) => {
+    console.log('example')
+    clients.forEach((c) => {
+        c.emit('starting', [{ title: "Example", answers: ["A", "B", "C", "D"] }])
+    setTimeout((e) => {
+        c.emit('question')
+        setTimeout((e) => {
+c.emit('lb', ['User 1', 'User 2', 'User 3'])
+        }, 10_000)
+    }, 5_000)
+    })
+    res.json({ status: true })
+})
 app.post('/protected/suspend_socket', (req,res) => {
     const { id } = req.body
     const client = clients.find(c => c.id === id)
