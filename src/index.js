@@ -1,4 +1,4 @@
-// setup an express server with socket io
+require('dotenv').config()
 const express = require('express');
 const app = express();
 const slides = require('./slides')
@@ -177,7 +177,7 @@ socket.on('disconnect', () => {
     // console.log('disconnected')
 })
 socket.on('connect', () => {
-
+// ...
 })
 })
 server.listen(process.env.PORT || 3000, () => {    
