@@ -110,7 +110,7 @@
         // events
         document.getElementById('next-slide').addEventListener('click', () => {
             fetch('/protected/next_slide', {
-                method: 'GET',
+                method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 }
@@ -122,7 +122,7 @@
         })
         document.getElementById('leaderboard').addEventListener('click', () => {
             fetch('/protected/leaderboard', {
-                method: 'GET',
+                method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 }

@@ -6,6 +6,7 @@ const server = require('http').Server(app);
 const io = require('socket.io')(server);
 const password = 'dixionANDsaahilprojectpassword'
 const clients = []
+let ans = []
 const basicAuth = require('express-basic-auth')
 let currentKey = null
 let slide_index = 0
@@ -19,7 +20,7 @@ app.use('/protected/', (req,res,next) => {
     next()
 },basicAuth({
     authorizer: (username, p) => {
-        console.log('called#')
+        // console.log('called#')
         return p === password
     },
     challenge: true,
@@ -33,7 +34,7 @@ app.get('/protected/auth', (req,res) => {
 })
 // list all socket io clients
 app.get('/protected/clients', (req,res) => {
-    console.log(clients)
+    // console.log(clients)
     // res.json(io.sockets.clients().connected)
     res.json({ clients: [...new Set(clients)].map(c => {
         return {
@@ -44,6 +45,9 @@ app.get('/protected/clients', (req,res) => {
 })
 app.get('/protected/slide_index', (req,res) => {
     res.json({ index: slide_index })
+})
+app.get('/protected/slide_ans', (req,res) => {
+    res.json({ ans })
 })
 app.get('/protected/slides', (req,res) => {
     res.json(slides)
@@ -80,18 +84,37 @@ app.post('/protected/next_slide', (req,res) => {
     // setTimeout((e) => {
     //     // io.sockets.emit('question')
     // }, 1_500)
+    if(slide_index < slides.length) {
+    const i = slide_index
     clients.forEach((c) => {
-        c.emit('starting', slides[slide_index])
+        c.emit('starting', slides[i])
     setTimeout((e) => {
         c.emit('question')
-        slide_index++;
-    }, 8_000)
+    }, 3_000)
     })
+    slide_index++;
     // socket.emit('question')
     res.json({ status: true })
+} else {
+    const e = clients.sort((a,b) => b.handshake.points - a.handshake.points).map(e => e.handshake.username)
+    console.log(1, e)
+    clients.forEach((c) => {
+        console.log(33)
+   c.emit('lb', e)
+   console.log(44)
+    })
+    res.json({ status: false })
+}
 })
 app.post('/protected/leaderboard', (req,res) => {
-    io.sockets.emit('lb', req.body.lb || [])
+    console.log(0)
+    const e = clients.sort((a,b) => b.handshake.points - a.handshake.points).map(e => e.handshake.username)
+    console.log(1, e)
+    clients.forEach((c) => {
+        console.log(33)
+   c.emit('lb', e)
+   console.log(44)
+    })
     res.json({ status: true })
 })
 app.get('/', (req,res) => {
@@ -122,6 +145,7 @@ if(req.query.key === currentKey) {
 io.on('connection', (socket) => {
 socket.on('game_code', (code) => {
     clients.push(socket)
+    console.log('new client')
     console.log(currentKey, code)
     if(code === currentKey) {
         // socket.join(code)
@@ -132,17 +156,28 @@ socket.on('game_code', (code) => {
         // socket.on('query_scores', () => {
 
         // })
+     
     } else {
         socket.emit('rejected')
     }
+    socket.on('anwser', (anwser, points) => {
+        if(!socket.handshake.points) socket.handshake.points = 0
+        if(anwser === slides[slide_index - 1]?.questions[0]?.correct) socket.handshake.points += points
+        console.log(anwser, socket.handshake.username, socket.handshake.points,slides[slide_index])
+        ans.push({ username: socket.handshake.username, anwser, id: socket.id, points })
+    })
 })
 socket.on('username', (username) => {
     socket.handshake.username = username
 })
 socket.on('disconnect', () => {
-    const index = clients.indexOf(socket)
-    clients.splice(index, 1)
+    // console.log(socket.handshake.username, 'disconnected')
+    // const index = clients.indexOf(socket)
+    // clients.splice(index, 1)
     // console.log('disconnected')
+})
+socket.on('connect', () => {
+
 })
 })
 server.listen(3000, () => {    

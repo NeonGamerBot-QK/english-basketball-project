@@ -125,6 +125,7 @@ o/4.7.4/socket.io.js"></script>
     <script>
       // summon socket io
       console.log('ur mom')
+      let username = null;
       const socket = io();
       const ccode = document.getElementById('code_input');
       const btn = document.getElementById('code_btn');
@@ -135,7 +136,7 @@ socket.emit('game_code', ccode.value.trim());
 socket.on('accepted', () => {
   document.getElementById('code').className = 'hidden'
   document.getElementById('game-loading').className = ''
-  const username = prompt('Enter your username')
+   username = prompt('Enter your username')
   socket.emit('username', username)
   setTimeout(()   => {
 socket.on('starting', (question) => {
@@ -145,17 +146,30 @@ document.getElementById('game-loading').className = 'hidden'
 document.getElementById('beforeQuestion').className = ''
 document.getElementById('question_title').innerHTML = question.title
 let selected = -1
+function onClick(index) {
+  return () => {
+    selected = index
+    const ans = document.getElementById('anss').querySelectorAll('button')
+    ans.forEach((button) => {
+      button.className = 'btn btn-primary p-5'
+    })
+    ans[index].className = 'btn btn-success p-5'
+  }
+}
 document.getElementById('q_title').innerHTML = question.questions[0].title
 document.getElementById('q_0').innerHTML = question.questions[0].options[0]
-document.getElementById('q_0').onclick = (_) => selected = 0; document.getElementById('q_0').className =  'btn btn-success p-5';
+document.getElementById('q_0').onclick = onClick(0) // (_) => { selected = 0; document.getElementById('q_0').className =  'btn btn-success p-5'; }
 document.getElementById('q_1').innerHTML = question.questions[0].options[1]
-document.getElementById('q_1').onclick = (_) => selected = 1; document.getElementById('q_1').className =  'btn btn-success p-5';
+document.getElementById('q_1').onclick = onClick(1) //(_) => {selected = 1; document.getElementById('q_1').className =  'btn btn-success p-5';}
 document.getElementById('q_2').innerHTML = question.questions[0].options[2]
-document.getElementById('q_2').onclick = (_) => selected = 2; document.getElementById('q_2').className =  'btn btn-success p-5';
+document.getElementById('q_2').onclick = onClick(2) //(_) => {selected = 2; document.getElementById('q_2').className =  'btn btn-success p-5';}
 document.getElementById('q_3').innerHTML = question.questions[0].options[3]
-document.getElementById('q_3').onclick = (_) => selected = 3; document.getElementById('q_3').className =  'btn btn-success p-5';
-
-
+document.getElementById('q_3').onclick = onClick (3) //(_) => {selected = 3; document.getElementById('q_3').className =  'btn btn-success p-5';}
+// const date = Date.now()
+let points = 1000
+let inter = setInterval(() => {
+points -= 10
+}, 500)
 document.getElementById('question_submit').addEventListener('click', () => {
   // const ans = document.getElementById('anss').querySelectorAll('button')
   // ans.forEach((button) => {
@@ -163,7 +177,11 @@ document.getElementById('question_submit').addEventListener('click', () => {
   // })
   // ans[question.questions[0].answer].className = 'btn btn-success p-5'
   // socket.emit('answer', question.questions[0].answer)
-  socket.emit('answer', selected)
+  clearInterval(inter)
+  document.getElementById('anss').querySelectorAll('button').forEach((button) => {
+      button.className = 'btn btn-primary p-5'
+    })
+  socket.emit('anwser', selected, points)
   document.getElementById('beforeQuestion').className = ''
 document.getElementById('question').className = 'hidden'
 document.getElementById('afterQuestion').className = 'hidden'
@@ -201,7 +219,9 @@ socket.on('lb', (leaderboard) => {
     li.innerHTML = `${index+1 === 1 ? '1st' : index+1 === 2?'2nd' : index+1 == 3 ? '3rd' : `${index}th`} - ${username}`;
     document.getElementById('after_lb').appendChild(li)
   })
-  document.getElementById('item').innerHTML = document.getElementById('item').innerHTML.replace('$PLACE', leaderboard.length)
+  // console.log(socket.id)
+  let index = leaderboard.indexOf(leaderboard.find(s => s === username))
+  document.getElementById('place').innerHTML = document.getElementById('place').innerHTML.replace('$PLACE',index+1 === 1 ? '1st' : index+1 === 2?'2nd' : index+1 == 3 ? '3rd' : `${index}th` )
   console.log('lb')
 })
         // })
