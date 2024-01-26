@@ -7,5 +7,5 @@ Game:
 - awnser within time
 
 Easyer egg:
-- Lazy System: Chooses an awnsers in 3-5secs but chooses a random awnser
-- Add hints to a cheating system
+- ~~Lazy System: Chooses an awnsers in 3-5secs but chooses a random awnser~~
+- ~~Add hints to a cheating system~~
